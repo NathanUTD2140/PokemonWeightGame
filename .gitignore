@@ -1,0 +1,8 @@
+# Dependencies (root / main project)
+/node_modules/
+
+# Dependencies (test folder)
+test/node_modules/
+
+# Environment variables
+.env
