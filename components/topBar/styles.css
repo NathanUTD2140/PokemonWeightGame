@@ -54,3 +54,42 @@
   margin-right: 20px !important; 
   font-weight: 500;
 }
+
+/* Logout button */
+.logout-button {
+  height: 28px;              /* Keeps it small*/
+  line-height: 28px;
+  padding: 0 12px;
+  border: none;
+  background-color: #ffffff;
+  cursor: pointer;
+  border-radius: 4px;
+  font-weight: bold;
+  display: inline-flex;
+  align-items: center;
+}
+
+.logout-button:hover {
+  transform: scale(.95); /*Scales this down */
+  background-color: #ddd;
+}
+
+.logout-button:active {
+  animation: shrink 0.2s ease; /*activates when clicked */
+}
+
+@keyframes shrink {
+  0% {
+    transform: scale(1);
+    box-shadow: 0 0 0px rgba(255,255,255,0);
+  }
+  50% {
+    transform: scale(.9);
+    box-shadow: 0 0 25px rgba(255,255,255,0.9); 
+    /*Sclaes a little on click*/
+  }
+  100% {
+    transform: scale(1);
+    box-shadow: 0 0 0px rgba(255,255,255,0);
+  }
+}

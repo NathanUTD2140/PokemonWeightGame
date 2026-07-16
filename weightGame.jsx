@@ -9,7 +9,8 @@ import {
 } from 'react-router-dom';
 
 import './styles/main.css';
-import TopBar from './components/TopBar';
+import login from './components/login';
+import topBar from './components/topBar';
 import { apiUrl } from './lib/apiBaseUrl.js';
 
 const queryClient = new QueryClient({
@@ -32,7 +33,61 @@ function Home() {
 
 
 function Root() {
-  // well set up a user login here
+  // sets up the users to log in
+  const [loggedInUser, setLoggedInUser] = useState(null);
+
+  // Check session on load
+  useEffect(() => {
+    fetch(apiUrl('/admin/me'), {
+      credentials: "include",
+    })
+      .then(res => {
+        if (!res.ok) throw new Error();
+        return res.json();
+      })
+      .then(data => setLoggedInUser(data)) //if data found, stay logged in
+      .catch(() => setLoggedInUser(null)); //otherwise no user
+  }, []);
+
+  // only shows in login page if no current user
+  if (!loggedInUser) {
+    return (
+      <login setLoggedInUser={setLoggedInUser} />
+    ); //routs to login page
+  }
+
+  // If logged in, can show the normal page
+  return (
+    <div>
+      <Grid container spacing={2}>
+        
+        {/* TopBar */}
+        <Grid item xs={12}>
+          <topBar
+            loggedInUser={loggedInUser}
+            setLoggedInUser={setLoggedInUser}
+          />
+        </Grid>
+
+        <div className="main-topbar-buffer" />
+
+        {/* Sidebar */}
+        <Grid item sm={3}>
+          <Paper className="main-grid-item">
+            <UserList />
+          </Paper>
+        </Grid>
+
+        {/* Main Content */}
+        <Grid item sm={9}>
+          <Paper className="main-grid-item">
+            <Outlet />
+          </Paper>
+        </Grid>
+
+      </Grid>
+    </div>
+  );
 }
 
 function UserLayout() {
