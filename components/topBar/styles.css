@@ -1,0 +1,56 @@
+.topbar-appBar {
+  height: 60px;
+  display: flex;
+  overflow: hidden; /*Ensures our components don't go past the ideal point*/
+  justify-content: center;
+}
+
+/* toolbar layout */
+.topbar-toolbar {
+  min-height: 64px !important;
+  height: 64px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 20px;
+  box-sizing: border-box;
+}
+
+/* our names*/
+.topbar-name {
+  font-family: 'Courier New', Courier, monospace;
+  font-weight: bold;
+  font-style: italic;
+}
+
+/* center title */
+.topbar-center {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+.topbar-title-link {
+  text-decoration: none;
+  color: rgb(0, 0, 0);
+  font-family: 'Georgia', serif;
+  font-weight: 900;
+}
+
+/* right side with added details */
+.topbar-right {
+  display: flex;
+  align-items: center;
+  gap: 25px;
+}
+
+/* Context text */
+.topbar-context {
+  font-family:'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
+}
+
+/* Logged-in user text */
+.topbar-user {
+  margin-right: 20px !important; 
+  font-weight: 500;
+}

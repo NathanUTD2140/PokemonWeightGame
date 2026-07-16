@@ -9,6 +9,7 @@ import {
 } from 'react-router-dom';
 
 import './styles/main.css';
+import TopBar from './components/TopBar';
 import { apiUrl } from './lib/apiBaseUrl.js';
 
 const queryClient = new QueryClient({
@@ -50,7 +51,7 @@ const router = createBrowserRouter([
       {
         path: null,
         element: <UserLayout />,
-        children: [ //eeed to add in paths later
+        children: [ //need to add in paths later
           { index: true, element: null},
           { path: null},
         ],
