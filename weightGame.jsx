@@ -9,6 +9,9 @@ import {
 } from 'react-router-dom';
 
 import './styles/main.css';
+import Login from './components/login';
+import TopBar from './components/topBar';
+import UserDetail from './components/UserDetail';
 import { apiUrl } from './lib/apiBaseUrl.js';
 
 const queryClient = new QueryClient({
@@ -29,9 +32,42 @@ function Home() {
   );
 }
 
+function userDetailRoute() {
+  const { userId } = useParams();
+  return <userDetail userId={userId} />;
+}
 
 function Root() {
-  // well set up a user login here
+  // sets up the users to log in
+  // If logged in, can show the normal page
+  return (
+    <div>
+      <Grid container spacing={2}>
+        
+        {/* TopBar */}
+        <Grid item xs={12}>
+          <topBar />
+        </Grid>
+
+        <div className="main-topbar-buffer" />
+
+        {/* Sidebar, will need to implement later. */}
+        <Grid item sm={3}>
+          <Paper className="main-grid-item">
+            
+          </Paper>
+        </Grid>
+
+        {/* Main Content */}
+        <Grid item sm={9}>
+          <Paper className="main-grid-item">
+            <Outlet />
+          </Paper>
+        </Grid>
+
+      </Grid>
+    </div>
+  );
 }
 
 function UserLayout() {
@@ -44,17 +80,7 @@ const router = createBrowserRouter([
     element: <Root />,
     children: [
       { index: true, element: <Home /> },
-
-      { path: null, element: null },
-
-      {
-        path: null,
-        element: <UserLayout />,
-        children: [ //eeed to add in paths later
-          { index: true, element: null},
-          { path: null},
-        ],
-      },
+      { path: 'users/:userId', element: <userDetailRoute /> },
     ],
   },
 ]);

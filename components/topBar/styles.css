@@ -1,0 +1,95 @@
+.topbar-appBar {
+  height: 60px;
+  display: flex;
+  overflow: hidden; /*Ensures our components don't go past the ideal point*/
+  justify-content: center;
+}
+
+/* toolbar layout */
+.topbar-toolbar {
+  min-height: 64px !important;
+  height: 64px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 20px;
+  box-sizing: border-box;
+}
+
+/* our names*/
+.topbar-name {
+  font-family: 'Courier New', Courier, monospace;
+  font-weight: bold;
+  font-style: italic;
+}
+
+/* center title */
+.topbar-center {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+.topbar-title-link {
+  text-decoration: none;
+  color: rgb(0, 0, 0);
+  font-family: 'Georgia', serif;
+  font-weight: 900;
+}
+
+/* right side with added details */
+.topbar-right {
+  display: flex;
+  align-items: center;
+  gap: 25px;
+}
+
+/* Context text */
+.topbar-context {
+  font-family:'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
+}
+
+/* Logged-in user text */
+.topbar-user {
+  margin-right: 20px !important; 
+  font-weight: 500;
+}
+
+/* Logout button */
+.logout-button {
+  height: 28px;              /* Keeps it small*/
+  line-height: 28px;
+  padding: 0 12px;
+  border: none;
+  background-color: #ffffff;
+  cursor: pointer;
+  border-radius: 4px;
+  font-weight: bold;
+  display: inline-flex;
+  align-items: center;
+}
+
+.logout-button:hover {
+  transform: scale(.95); /*Scales this down */
+  background-color: #ddd;
+}
+
+.logout-button:active {
+  animation: shrink 0.2s ease; /*activates when clicked */
+}
+
+@keyframes shrink {
+  0% {
+    transform: scale(1);
+    box-shadow: 0 0 0px rgba(255,255,255,0);
+  }
+  50% {
+    transform: scale(.9);
+    box-shadow: 0 0 25px rgba(255,255,255,0.9); 
+    /*Sclaes a little on click*/
+  }
+  100% {
+    transform: scale(1);
+    box-shadow: 0 0 0px rgba(255,255,255,0);
+  }
+}
