@@ -1,0 +1,96 @@
+import React, { useEffect, useState } from 'react';
+// eslint-disable-next-line import/no-extraneous-dependencies
+import ReactDOM from 'react-dom/client';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
+import { Grid, Typography, Paper } from '@mui/material';
+import {
+  createBrowserRouter, RouterProvider, Outlet, useParams,
+} from 'react-router-dom';
+
+import './styles/main.css';
+import Login from './components/login';
+import TopBar from './components/topBar';
+import UserDetail from './components/UserDetail';
+import { apiUrl } from './lib/apiBaseUrl.js';
+
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      staleTime: 30 * 1000,
+      refetchOnWindowFocus: true,
+    },
+  },
+});
+
+function Home() {
+  return (
+    <Typography variant="body1">
+      Welcome to the my funny little game! Click on the pokemon button to get the weight comparison!
+      Login to save your high scores or come back to see your high scores. Happy gaming!
+    </Typography>
+  );
+}
+
+function userDetailRoute() {
+  const { userId } = useParams();
+  return <userDetail userId={userId} />;
+}
+
+function Root() {
+  // sets up the users to log in
+  // If logged in, can show the normal page
+  return (
+    <div>
+      <Grid container spacing={2}>
+        
+        {/* TopBar */}
+        <Grid item xs={12}>
+          <topBar />
+        </Grid>
+
+        <div className="main-topbar-buffer" />
+
+        {/* Sidebar, will need to implement later. */}
+        <Grid item sm={3}>
+          <Paper className="main-grid-item">
+            
+          </Paper>
+        </Grid>
+
+        {/* Main Content */}
+        <Grid item sm={9}>
+          <Paper className="main-grid-item">
+            <Outlet />
+          </Paper>
+        </Grid>
+
+      </Grid>
+    </div>
+  );
+}
+
+function UserLayout() {
+  return <Outlet />;
+}
+
+const router = createBrowserRouter([
+  {
+    path: '/',
+    element: <Root />,
+    children: [
+      { index: true, element: <Home /> },
+      { path: 'users/:userId', element: <userDetailRoute /> },
+    ],
+  },
+]);
+
+const root = ReactDOM.createRoot(document.getElementById('weightGameApp'));
+root.render(
+  <QueryClientProvider client={queryClient}>
+    <RouterProvider router={router} />
+    {import.meta.env.DEV ? (
+      <ReactQueryDevtools initialIsOpen={false} />
+    ) : null}
+  </QueryClientProvider>,
+);

@@ -1,0 +1,51 @@
+/* Main container/card styling */
+.user-detail-card {
+  background: linear-gradient(100deg, #f69d49, #ff790c);
+  padding: 25px;
+  border-radius: 12px;
+  box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.15);
+}
+
+/* User we are looking at  */
+.user-detail-title {
+  font-size: 2.4rem !important;
+  font-family:'Segoe UI', Tahoma, Geneva, Verdana, sans-serif !important;
+  font-style: italic;
+  font-weight: 800;
+  color: #000000; /* Text color */
+  margin-bottom: 20px;
+}
+
+/* location, occupation, other details */
+.user-detail-row {
+  font-size: 1.3rem;
+  color: #1a1a1a;
+  padding: 14px 0;
+  border-bottom: 2px solid #47433c;
+}
+
+/* Removes the line from the border  */
+.user-detail-row:last-child { 
+  border-bottom: none;
+}
+
+/* Details styling */
+.user-detail-label {
+  font-weight: 700;
+  font-family: 'Courier New', Courier, monospace !important;
+  font-size: 1.35rem;  /* slightly bigger  */
+  color: #000000;
+}
+
+/* Button container for spacing */
+.user-detail-button-container {
+  margin-top: 30px;   /* puts space above button  */
+  display: flex;
+  justify-content: left; 
+}
+
+/* Button spacing */
+.user-detail-button {
+  border-top: 20px;
+  margin-top: 40px;
+}

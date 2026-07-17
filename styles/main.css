@@ -1,0 +1,12 @@
+/**
+Styles for the main index page
+ */
+
+.main-topbar-buffer {
+  margin-top: 70px;
+}
+
+.main-grid-item{
+  height: calc(100vh - 64px);
+  padding: 10px;
+}
