@@ -9,8 +9,9 @@ import {
 } from 'react-router-dom';
 
 import './styles/main.css';
-import login from './components/login';
-import topBar from './components/topBar';
+import Login from './components/login';
+import TopBar from './components/topBar';
+import UserDetail from './components/UserDetail';
 import { apiUrl } from './lib/apiBaseUrl.js';
 
 const queryClient = new QueryClient({
@@ -31,31 +32,13 @@ function Home() {
   );
 }
 
+function userDetailRoute() {
+  const { userId } = useParams();
+  return <userDetail userId={userId} />;
+}
 
 function Root() {
   // sets up the users to log in
-  const [loggedInUser, setLoggedInUser] = useState(null);
-
-  // Check session on load
-  useEffect(() => {
-    fetch(apiUrl('/admin/me'), {
-      credentials: "include",
-    })
-      .then(res => {
-        if (!res.ok) throw new Error();
-        return res.json();
-      })
-      .then(data => setLoggedInUser(data)) //if data found, stay logged in
-      .catch(() => setLoggedInUser(null)); //otherwise no user
-  }, []);
-
-  // only shows in login page if no current user
-  if (!loggedInUser) {
-    return (
-      <login setLoggedInUser={setLoggedInUser} />
-    ); //routs to login page
-  }
-
   // If logged in, can show the normal page
   return (
     <div>
@@ -63,18 +46,15 @@ function Root() {
         
         {/* TopBar */}
         <Grid item xs={12}>
-          <topBar
-            loggedInUser={loggedInUser}
-            setLoggedInUser={setLoggedInUser}
-          />
+          <topBar />
         </Grid>
 
         <div className="main-topbar-buffer" />
 
-        {/* Sidebar */}
+        {/* Sidebar, will need to implement later. */}
         <Grid item sm={3}>
           <Paper className="main-grid-item">
-            <UserList />
+            
           </Paper>
         </Grid>
 
@@ -100,17 +80,7 @@ const router = createBrowserRouter([
     element: <Root />,
     children: [
       { index: true, element: <Home /> },
-
-      { path: null, element: null },
-
-      {
-        path: null,
-        element: <UserLayout />,
-        children: [ //need to add in paths later
-          { index: true, element: null},
-          { path: null},
-        ],
-      },
+      { path: 'users/:userId', element: <userDetailRoute /> },
     ],
   },
 ]);
