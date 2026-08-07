@@ -19,7 +19,44 @@ const mongoUrl = process.env.MONGODB_URI ||
 
 
 // Enable CORS for frontend running on a different port
-app.use(cors());
+// Comma-separated origins, e.g. http://localhost:3000,https://your-app.vercel.app
+const allowedOrigins = (
+  process.env.CORS_ORIGIN ||
+  process.env.FRONTEND_URL ||
+  'http://localhost:3000'
+)
+  .split(',')
+  .map((origin) => origin.trim())
+  .filter(Boolean);
+
+
+app.use(
+  cors({
+    origin(origin, callback) {
+      if (!origin || allowedOrigins.includes(origin)) {
+        callback(null, true);
+      } else {
+        callback(new Error(`CORS blocked origin: ${origin}`));
+      }
+    },
+    credentials: true,
+  }),
+);
+
+app.use(express.json());
+
+app.use(
+  session({
+    secret: process.env.SESSION_SECRET || 'secret-key',
+    resave: false,
+    saveUninitialized: false,
+    cookie: {
+      httpOnly: true,
+      secure: false, // set to true only when serving over HTTPS in production
+      sameSite: 'lax',
+    },
+  }),
+);
 
 mongoose.connect(mongoUrl);
 
@@ -56,7 +93,7 @@ app.get('/user/:id', async (req, res) => {
 
     const user = await User.findById(
       userId,
-      '_id first_name last_name location description occupation',
+      '_id user_name high_score'
     ).lean();
 
     if (!user) {

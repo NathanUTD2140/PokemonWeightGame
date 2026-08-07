@@ -7,7 +7,7 @@ import { Box, Button, Card, CardContent,
   CircularProgress, Typography, Grid, Paper } from '@mui/material';
 import {
   createBrowserRouter, RouterProvider, Outlet, useParams,
-} from 'react-router-dom';
+useOutletContext } from 'react-router-dom';
 
 import './styles/main.css';
 import Login from './components/login';
@@ -71,16 +71,34 @@ function UserDetailRoute() {
   return <UserDetail userId={userId} />;
 }
 
+function LoginRoute(){
+  const { loggedInUser, setLoggedInUser } = useOutletContext();
+  return <Login loggedInUser={loggedInUser} setLoggedInUser={setLoggedInUser} />;
+}
+
 function Root() {
   // sets up the users to log in
   // If logged in, can show the normal page
+  const [loggedInUser, setLoggedInUser] = useState(null);
+
+  // check session on load, so a page refresh doesn't log the user out
+  useEffect(() => {
+    fetch(apiUrl('/admin/me'), { credentials: 'include' })
+      .then((res) => {
+        if (!res.ok) throw new Error();
+        return res.json();
+      })
+      .then((data) => setLoggedInUser(data))
+      .catch(() => setLoggedInUser(null));
+  }, []);
+
   return (
     <div>
       <Grid container spacing={2}>
         
         {/* TopBar */}
         <Grid item xs={12}>
-          <TopBar />
+          <TopBar loggedInUser={loggedInUser} setLoggedInUser={setLoggedInUser} />
         </Grid>
 
         <div className="main-topbar-buffer" />
@@ -95,7 +113,7 @@ function Root() {
         {/* Main Content */}
         <Grid item sm={9}>
           <Paper className="main-grid-item">
-            <Outlet />
+            <Outlet context={{ loggedInUser, setLoggedInUser }} />
           </Paper>
         </Grid>
 
@@ -114,7 +132,8 @@ const router = createBrowserRouter([
     element: <Root />,
     children: [
       { index: true, element: <Home /> },
-      { path: 'users/:userId', element: <UserDetailRoute /> },
+      { path: 'users/:userId', element: <UserDetailRoute />  },
+      { path: 'login', element: <LoginRoute />  },
     ],
   },
 ]);
