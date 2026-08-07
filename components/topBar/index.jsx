@@ -40,6 +40,7 @@ function topBar( {loggedInUser, setLoggedInUser }) {
     await api.post('/admin/logout', {}, { withCredentials: true }); 
     //calls the API to log out
     setLoggedInUser(null); //set it as blank if it worked
+    navigate('/');
   } catch (err) {
     console.error('Logout failed');
   }
