@@ -1,6 +1,7 @@
 import mongoose from "mongoose";
 import dotenv from "dotenv";
 import Bluebird from "bluebird";
+import bcrypt from "bcrypt";
 
 //schemas from mongoose
 import User from "./Schema/user.js";
@@ -23,10 +24,11 @@ const removePromises = [
 ];
 
 Promise.all(removePromises).then(async function() {
+    const hashedPassword = await bcrypt.hash("password", 10);
     const testingUser = await User.create({
         user_name: "test",
         high_score: [7, 5, 4],
-        password_digest: "password",
+        password_digest: hashedPassword,
     });
     
     await testingUser.save();
