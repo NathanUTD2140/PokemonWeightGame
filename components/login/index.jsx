@@ -1,33 +1,31 @@
-import React, { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import React, { useState, useEffect } from "react";
+import { useNavigate, useLocation } from "react-router-dom";
 import { apiUrl } from "../../lib/apiBaseUrl.js";
 import "./styles.css";
 
-function login({ setLoggedInUser }) {
-  const [login, setLogin] = useState({ login_name: "", password: "" }); 
+function Login({ loggedInUser, setLoggedInUser }) {
+  const [loginForm, setLoginForm] = useState({ user_name: "", password: "" }); 
   //starts by being blank
   //gets the details from the schema
   const [register, setRegister] = useState({
-    login_name: "",
+    user_name: "",
     password: "",
-    first_name: "",
-    last_name: "",
-    location: "",
-    description: "",
-    occupation: "",
   });
 
   const navigate = useNavigate();
   const location = useLocation();
   const [error, setError] = useState("");
+    // go back to the previous state
+  const redirectTo = location.state?.from || null;
+
+  useEffect(() => {
+    if (loggedInUser) {
+      navigate("/", { replace: true }); }
+  }, [loggedInUser, navigate]);
 
   if (loggedInUser) {
-    navigate("/", { replace: true });
     return null;
   }
-
-  // go back to the previous state
-  const redirectTo = location.state?.from || null;
 
   const handleLogin = async (e) => {
     e.preventDefault();
@@ -37,14 +35,14 @@ function login({ setLoggedInUser }) {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             credentials: "include",
-            body: JSON.stringify(login),
+            body: JSON.stringify(loginForm),
         });
 
         const data = await res.json(); //reads the fetched data
 
         if (!res.ok) {
             const message = typeof data === "string"
-            ? data : data?.error || "Login failed"
+            ? data : data?.error || "Login failed";
             setError(message); // backend sends string
             return; //stop the login attempt
         }
@@ -81,7 +79,7 @@ function login({ setLoggedInUser }) {
         headers: { "Content-Type": "application/json" },
         credentials: "include",
         body: JSON.stringify({
-            login_name: register.login_name,
+            user_name: register.user_name,
             password: register.password,
         }),
       });
@@ -113,24 +111,26 @@ function login({ setLoggedInUser }) {
       </p>
 
       {/* Login form*/}
-      <input
-        className="input"
-        placeholder="Login Name"
-        value = {login.login_name}
-        onChange={e => setLogin({ ...login, login_name: e.target.value })}
-      />
-      <input
-        className="input"
-        type="password"
-        placeholder="Password"
-        value = {login.password}
-        onChange={e => setLogin({ ...login, password: e.target.value })}
-        /* Waits to listen for an input to login */
-      />
+      <form onSubmit={handleLogin}>
+        <input
+          className="input"
+          placeholder="Login Name"
+          value = {loginForm.user_name}
+          onChange={e => setLoginForm({ ...loginForm, user_name: e.target.value })}
+        />
+        <input
+          className="input"
+          type="password"
+          placeholder="Password"
+          value = {loginForm.password}
+          onChange={e => setLoginForm({ ...loginForm, password: e.target.value })}
+          /* Waits to listen for an input to login */
+        />
         {/* Sends through the inputted strings to login */}
-      <button className="login-btn" onClick={handleLogin}>
-        Sign In
-      </button>
+        <button className="login-btn" type="submit">
+          Sign In
+        </button>
+      </form>
 
       {/* Text to switch to registration */}
       <p className="switch-text">
@@ -138,7 +138,7 @@ function login({ setLoggedInUser }) {
       </p>
 
       {/* Register form */}
-      <form className="register-section" onSubmit={handelRegister}>
+      <form className="register-section" onSubmit={handleRegister}>
         {Object.keys(register).map((key) => (
           <input /* Loops through fields to describe new user information */
             key={key}
@@ -161,4 +161,4 @@ function login({ setLoggedInUser }) {
 );
 }
 
-export default login;
+export default Login;

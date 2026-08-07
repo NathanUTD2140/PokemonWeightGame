@@ -12,7 +12,7 @@ function topBar( {loggedInUser, setLoggedInUser }) {
   const location = useLocation();
   const navigate = useNavigate();
   const userDetailMatch = useMatch('/users/:userId');
-  const userId = activeMatch?.params.userId;
+  const userId = userDetailMatch?.params.userId;
   
   const { data: user, isError } = useUserQuery(userId);
 
@@ -90,7 +90,7 @@ function topBar( {loggedInUser, setLoggedInUser }) {
                 <Typography
                     variant = "h6"
                     component = {Link}
-                    to = " /login"
+                    to = "login"
                     className = "topbar-login-link"
                 >
                     Please Login
