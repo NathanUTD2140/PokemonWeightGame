@@ -230,15 +230,17 @@ app.post('/user/:id/score', logIn, async (req, res) => {
       return res.status(400).send('Invalid score');
     }
 
-    const user = await User.findByIdAndUpdate(
-      userId,
-      { $push: { high_score: score } },
-      { new: true },
-    ).lean();
-
+    const user = await User.findByIdAndUpdate(userId)
     if (!user) {
       return res.status(404).send('User not found');
     }
+
+    const updatedScore = [...user.high_score, score]
+      .sort((a, b) => b - a)
+      .slice(0, 5);
+    
+    user.high_score = updatedScore;
+    await user.save();
 
     delete user.password_digest;
     return res.json(user);

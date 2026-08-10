@@ -23,9 +23,11 @@ function topBar( {loggedInUser, setLoggedInUser }) {
   let rightText = '';
 
   if (userDetailMatch && userName) {
-    rightText = userName;
+    rightText = 'Profile Page';
   } else if (location.pathname === '/') {
-    rightText = 'Home';
+    rightText = 'Home Page';
+  } else if (location.pathname === '/login'){
+    rightText = 'Sign-In Page';
   } else {
     rightText = '';
   }
@@ -76,8 +78,13 @@ function topBar( {loggedInUser, setLoggedInUser }) {
 
             {loggedInUser ? (
               <>
-                <Typography variant="h6" className="topbar-user">
-                  Hi {loggedInUser.user_name} {/*Outputs first name*/}
+                <Typography variant="h6" 
+                  component = {Link}
+                  to={`/users/${loggedInUser._id}`}
+                  className="topbar-user"
+                  sx = {{ textDecoration: 'none', color: 'inherit' }}
+                  >
+                  {loggedInUser.user_name} {/*Outputs login name*/}
                 </Typography>
 
                 <button className="logout-button" onClick={handleLogout}> 
