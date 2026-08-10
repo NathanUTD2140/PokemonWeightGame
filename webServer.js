@@ -207,6 +207,48 @@ app.post("/user", async (req, res) => {
   
 });
 
+/**
+ * POST /user/:id/score
+ * Appends a finished round's score to the logged-in user's high_score array.
+ */
+app.post('/user/:id/score', logIn, async (req, res) => {
+  try {
+    const userId = req.params.id;
+
+    if (!isValidObjectId(userId)) {
+      return res.status(400).send('Invalid user id');
+    }
+
+    // only allow a user to update their own score, not someone else's
+    if (req.session.userId.toString() !== userId) {
+      return res.status(403).send('Forbidden');
+    }
+
+    const { score } = req.body;
+
+    if (typeof score !== 'number' || Number.isNaN(score)) {
+      return res.status(400).send('Invalid score');
+    }
+
+    const user = await User.findByIdAndUpdate(userId)
+    if (!user) {
+      return res.status(404).send('User not found');
+    }
+
+    const updatedScore = [...user.high_score, score]
+      .sort((a, b) => b - a)
+      .slice(0, 5);
+    
+    user.high_score = updatedScore;
+    await user.save();
+
+    delete user.password_digest;
+    return res.json(user);
+  } catch (err) {
+    return res.status(500).send(err.message);
+  }
+});
+
 
 app.listen(port, () => {
   console.log(`Server running on port ${port}`);

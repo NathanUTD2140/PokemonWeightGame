@@ -28,21 +28,96 @@ const queryClient = new QueryClient({
 
 function Home() {
 
-  const [pokemonId, setPokemonId] = useState(() => getRandomPokemonId());
-  const { data: pokemon, isPending, isError } = usePokemonQuery(pokemonId);
+  const { loggedInUser } = useOutletContext();
 
-  const handleNewPokemon = () => {
+  const [pokemonId, setPokemonId] = useState(() => getRandomPokemonId());
+  const [pokemonId2, setPokemonId2] = useState(() => getRandomPokemonId());
+  const { data: pokemon, isPending, isError } = usePokemonQuery(pokemonId);
+  const { data: pokemon2, isPending: isPending2, isError: isError2 } = usePokemonQuery(pokemonId2);
+
+  const [score, setScore] = useState(0);
+  const [message, setMessage] = useState(''); 
+
+  const refreshPokemon = () => {
+    setPokemonId2(getRandomPokemonId());
     setPokemonId(getRandomPokemonId());
   };
   
+  const saveScore = async (finalScore) => {
+    //only send to database if there is score to save
+    if (!loggedInUser) return;
+
+    try {
+      await fetch(apiUrl(`/user/${loggedInUser._id}/score`), {
+        method : 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
+        body: JSON.stringify({ score: finalScore })
+      });
+    } catch (err){
+      console.error ('Failed to save data', err);
+    }
+  }
+
+  const handleGuess = (guessedPokemon) => {
+    if (!pokemon || !pokemon2) return; //in case one isn't working
+
+    let heavierSide;
+    if (pokemon.weight === pokemon2.weight){
+      heavierSide = null; //ties, no points added
+    } else {
+      heavierSide = pokemon.weight > pokemon2.weight ? 1 : 2;
+    }
+    
+    if (heavierSide === null){
+      setMessage("It's a Tie! You should find a shiny next time!")
+      refreshPokemon();
+      return;
+    }
+
+    if(guessedPokemon === heavierSide){
+      setScore((prev) => prev + 1);
+      setMessage("Awesome! You're right!");
+      refreshPokemon();
+    }
+    else{
+      setMessage(`Unfortunate, you got it wrong. Your final score is ${score}`)
+      saveScore(score);
+      setScore(0);
+      refreshPokemon();
+    }
+  }
+
   return (
     <div>
     <Typography variant="body1">
       Welcome to the my funny little game! Click on the pokemon button to get the weight comparison!
       Login to save your high scores or come back to see your high scores. Happy gaming!
     </Typography>
+
+      <Typography variant="h6" textAlign="center" py={1}>
+        Score: {score}
+      </Typography>
+
+      {message && (
+        <Typography textAlign="center" color="text.secondary">
+          {message}
+        </Typography>
+      )}
+
+      <Box
+        display="flex"
+        flexDirection={{ xs: 'column', sm: 'row' }}
+        justifyContent="center"
+        alignItems="center"
+        gap={4}
+        py={2}
+      >
+
+    {/* First Mon */}
+    <Box textAlign="center">
      {isPending && (
-        <Box display="flex" justifyContent="center" py={4}>
+        <Box display="flex" justifyContent="right" py={4}>
           <CircularProgress />
         </Box>
       )}
@@ -50,18 +125,48 @@ function Home() {
       {isError && <Typography color="error">Failed to load Pokemon.</Typography>}
 
       {pokemon && (
-        <Box textAlign="center">
+        <Box onClick={() => handleGuess(1)}
+          sx ={{ cursor: 'pointer' }}
+        >
           <img src={pokemon.sprite} alt={pokemon.name} />
           <Typography variant="h6" sx={{ textTransform: 'capitalize' }}>
             {pokemon.name}
           </Typography>
-          <Typography>Weight: {pokemon.weight / 10} kg</Typography>
+          {/* <Typography>Weight: {pokemon.weight / 10} kg</Typography>
 
           <Button variant="contained" onClick={handleNewPokemon}>
             New Pokemon
-          </Button>
+          </Button> */}
         </Box>
       )}
+      </Box>
+
+      <Box textAlign="center">
+      {isPending2 && (
+        <Box display="flex" justifyContent="left" py={4}>
+          <CircularProgress />
+        </Box>
+      )}
+
+      {isError2 && <Typography color="error">Failed to load Pokemon.</Typography>}
+
+      {pokemon2 && (
+        <Box onClick={() => handleGuess(2)}
+          sx ={{ cursor: 'pointer' }}
+        >
+          <img src={pokemon2.sprite} alt={pokemon2.name} />
+          <Typography variant="h6" sx={{ textTransform: 'capitalize' }}>
+            {pokemon2.name}
+          </Typography>
+          {/* <Typography>Weight: {pokemon2.weight / 10} kg</Typography>
+
+          <Button variant="contained" onClick={handleNewPokemon2}>
+            New Pokemon
+          </Button> */}
+        </Box>
+      )}
+      </Box>
+      </Box>
     </div>
   );
 }

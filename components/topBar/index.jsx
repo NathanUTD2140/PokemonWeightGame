@@ -1,5 +1,5 @@
 import {useState, React} from 'react';
-import { AppBar, Box, Toolbar, Typography } from '@mui/material';
+import { AppBar, Box, Toolbar, Typography, Button } from '@mui/material';
 import { useLocation, useMatch, Link, useNavigate } from 'react-router-dom';
 
 import { useUserQuery } from '../../hooks/useQueries';
@@ -23,9 +23,11 @@ function topBar( {loggedInUser, setLoggedInUser }) {
   let rightText = '';
 
   if (userDetailMatch && userName) {
-    rightText = userName;
+    rightText = 'Profile Page';
   } else if (location.pathname === '/') {
-    rightText = 'Home';
+    rightText = 'Game Page';
+  } else if (location.pathname === '/login'){
+    rightText = 'Sign-In Page';
   } else {
     rightText = '';
   }
@@ -57,14 +59,16 @@ function topBar( {loggedInUser, setLoggedInUser }) {
 
            {/* Center with link back to index.html */}
           <Box className="topbar-center">
-            <Typography
-              variant="h6"
+            <Button
               component={Link}
               to="/"
               className="topbar-title-link"
+              variant="outlined"
+              color="inherit"
+              sx={{ color: 'black', borderColor: 'black' }}
             >
-            Pokemon Weight Comparison
-            </Typography>
+              Pokemon Weight Comparison
+            </Button>
           </Box>
 
           {/* Right side with the logged in user, logout button, and description of page*/}
@@ -77,8 +81,13 @@ function topBar( {loggedInUser, setLoggedInUser }) {
 
             {loggedInUser ? (
               <>
-                <Typography variant="h6" className="topbar-user">
-                  Hi {loggedInUser.user_name} {/*Outputs first name*/}
+                <Typography variant="h6" 
+                  component = {Link}
+                  to={`/users/${loggedInUser._id}`}
+                  className="topbar-user"
+                  sx = {{ textDecoration: 'none', color: 'inherit' }}
+                  >
+                  {loggedInUser.user_name} {/*Outputs login name*/}
                 </Typography>
 
                 <button className="logout-button" onClick={handleLogout}> 
