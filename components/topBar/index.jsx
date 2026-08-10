@@ -1,5 +1,5 @@
 import {useState, React} from 'react';
-import { AppBar, Box, Toolbar, Typography } from '@mui/material';
+import { AppBar, Box, Toolbar, Typography, Button } from '@mui/material';
 import { useLocation, useMatch, Link, useNavigate } from 'react-router-dom';
 
 import { useUserQuery } from '../../hooks/useQueries';
@@ -25,7 +25,7 @@ function topBar( {loggedInUser, setLoggedInUser }) {
   if (userDetailMatch && userName) {
     rightText = 'Profile Page';
   } else if (location.pathname === '/') {
-    rightText = 'Home Page';
+    rightText = 'Game Page';
   } else if (location.pathname === '/login'){
     rightText = 'Sign-In Page';
   } else {
@@ -58,14 +58,16 @@ function topBar( {loggedInUser, setLoggedInUser }) {
 
            {/* Center with link back to index.html */}
           <Box className="topbar-center">
-            <Typography
-              variant="h6"
+            <Button
               component={Link}
               to="/"
               className="topbar-title-link"
+              variant="outlined"
+              color="inherit"
+              sx={{ color: 'black', borderColor: 'black' }}
             >
-            Pokemon Weight Comparison
-            </Typography>
+              Pokemon Weight Comparison
+            </Button>
           </Box>
 
           {/* Right side with the logged in user, logout button, and description of page*/}

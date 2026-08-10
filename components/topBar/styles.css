@@ -78,6 +78,19 @@
   animation: shrink 0.2s ease; /*activates when clicked */
 }
 
+.topbar-title-link {
+  text-decoration: none;
+  font-family: 'Georgia', serif;
+  font-weight: 900;
+  text-transform: none; /* uppercase by default */
+  padding: 6px 16px;
+}
+
+.topbar-title-link:hover {
+  background-color: rgba(92, 6, 6, 0.973);
+  border-color: rgb(0, 0, 0);
+}
+
 @keyframes shrink {
   0% {
     transform: scale(1);
@@ -92,4 +105,5 @@
     transform: scale(1);
     box-shadow: 0 0 0px rgba(255,255,255,0);
   }
+  
 }
