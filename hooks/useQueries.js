@@ -3,6 +3,7 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import api from '../lib/api';
 import queryKeys from '../lib/queryKeys';
 import { fetchPokemon } from '../lib/pokeApi';
+import { fetchObject } from '../lib/ObjectAPI';
 
 export function useUserQuery(userId) {
   return useQuery({
@@ -20,4 +21,9 @@ export function usePokemonQuery(idOrName) {
   });
 }
 
-
+export function useRandomObjectQuery(refetchKey) {
+  return useQuery({
+    queryKey: ['randomObject', refetchKey],
+    queryFn: fetchObject,
+  });
+}

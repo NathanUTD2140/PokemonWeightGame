@@ -249,6 +249,23 @@ app.post('/user/:id/score', logIn, async (req, res) => {
   }
 });
 
+/**
+ * GET /objects/random
+ * Returns one randomly selected object from the collection.
+ */
+app.get('/objects/random', async (req, res) => {
+  try {
+    const result = await Objects.aggregate([{ $sample: { size: 1 } }]);
+
+    if (!result || result.length === 0) {
+      return res.status(404).send('No objects found');
+    }
+
+    return res.json(result[0]);
+  } catch (err) {
+    return res.status(500).send(err.message);
+  }
+});
 
 app.listen(port, () => {
   console.log(`Server running on port ${port}`);
