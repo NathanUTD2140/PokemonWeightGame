@@ -43,8 +43,11 @@ function UserDetail({ userId: userIdProp }) {
 
   // high_score is an array of Numbers, default []
   // Will need to adjust later for multiple high scores
-  const highScore = user.high_score && user.high_score.length > 0
-    ? Math.max(...user.high_score)
+  const highScoreObject = user.high_score_object && user.high_score_object.length > 0
+    ? Math.max(...user.high_score_object)
+    : 'No scores yet';
+  const highScorePokemon= user.high_score_pokemon && user.high_score_pokemon.length > 0
+    ? Math.max(...user.high_score_pokemon)
     : 'No scores yet';
 
 
@@ -56,9 +59,11 @@ function UserDetail({ userId: userIdProp }) {
         </Typography>
 
         <Typography className="user-detail-row">
-          <span className="user-detail-label"> Highest Score: </span> {highScore}
+          <span className="user-detail-label"> Highest Score for Pokemon: </span> {highScorePokemon}
         </Typography>
-
+        <Typography className="user-detail-row">
+          <span className="user-detail-label"> Highest Score for Objects: </span> {highScoreObject}
+        </Typography>
       </CardContent>
     </Card>
   );

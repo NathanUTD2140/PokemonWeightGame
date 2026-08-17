@@ -93,7 +93,7 @@ app.get('/user/:id', async (req, res) => {
 
     const user = await User.findById(
       userId,
-      '_id user_name high_score'
+      '_id user_name high_score_object high_score_pokemon'
     ).lean();
 
     if (!user) {
@@ -224,22 +224,25 @@ app.post('/user/:id/score', logIn, async (req, res) => {
       return res.status(403).send('Forbidden');
     }
 
-    const { score } = req.body;
+    const { score, gameMode } = req.body;
 
     if (typeof score !== 'number' || Number.isNaN(score)) {
       return res.status(400).send('Invalid score');
     }
+    
+    const field = gameMode === 'pokemon' ? 'high_score_pokemon' : 'high_score_object';
 
     const user = await User.findByIdAndUpdate(userId)
     if (!user) {
       return res.status(404).send('User not found');
     }
 
-    const updatedScore = [...user.high_score, score]
+
+    const updatedScore = [...user[field], score]
       .sort((a, b) => b - a)
-      .slice(0, 5);
+      .slice(0, 3);
     
-    user.high_score = updatedScore;
+    user[field] = updatedScore;
     await user.save();
 
     delete user.password_digest;

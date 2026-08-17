@@ -66,7 +66,7 @@ function Home() {
         method : 'POST',
         headers: { 'Content-Type': 'application/json' },
         credentials: 'include',
-        body: JSON.stringify({ score: finalScore })
+        body: JSON.stringify({ score: finalScore, gameMode })
       });
     } catch (err){
       console.error ('Failed to save data', err);
@@ -119,7 +119,9 @@ function Home() {
   return (
     <div>
     <Typography variant="body1">
-      Welcome to the my funny little game! Click on the pokemon button to get the weight comparison!
+      Welcome to the my funny little game! Click on the pokemon or object you think is heavier. 
+      Your score will be tracked until you get it wrong. Click on the leftside buttons to swap modes. 
+      Click on the big button at the top to come back to the game page.
       Login to save your high scores or come back to see your high scores. Happy gaming!
     </Typography>
 
