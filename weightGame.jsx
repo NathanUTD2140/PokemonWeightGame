@@ -7,7 +7,7 @@ import { Box, Button, Card, CardContent,
   CircularProgress, Typography, Grid, Paper } from '@mui/material';
 import {
   createBrowserRouter, RouterProvider, Outlet, useParams,
-useOutletContext } from 'react-router-dom';
+useOutletContext, useLocation } from 'react-router-dom';
 
 import './styles/main.css';
 import Login from './components/login';
@@ -82,6 +82,7 @@ function Home() {
       setScore(0);
       setMessage(`You changed game modes, your final score is ${score}`);
       previousGameMode.current = gameMode;
+      refreshPokemon();
     }
   }, [gameMode]);
 
@@ -217,6 +218,8 @@ function Root() {
   const [loggedInUser, setLoggedInUser] = useState(null);
   //swapping between the game's mode
   const [gameMode, setGameMode] = useState('pokemon'); // 'pokemon' or 'object'
+  const location = useLocation(); //made to keep track of styling per page
+  const isHomePage = location.pathname === '/'; //variable that will act as a bool
 
   // check session on load, so a page refresh doesn't log the user out
   useEffect(() => {
@@ -243,6 +246,7 @@ function Root() {
         {/* Sidebar, will need to implement later. */}
         <Grid item sm={3}>
           <Paper className="main-grid-item">
+            {isHomePage && ( 
             <Box display="flex" flexDirection="column" gap={1} p={2}>
             <Button
                 variant={gameMode === 'pokemon' ? 'contained' : 'outlined'}
@@ -257,6 +261,7 @@ function Root() {
                 Pokemon vs. Object
               </Button>
             </Box>
+            )}
           </Paper>
         </Grid>
 
