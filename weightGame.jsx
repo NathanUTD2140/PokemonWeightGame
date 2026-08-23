@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 // eslint-disable-next-line import/no-extraneous-dependencies
 import ReactDOM from 'react-dom/client';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
@@ -7,13 +7,13 @@ import { Box, Button, Card, CardContent,
   CircularProgress, Typography, Grid, Paper } from '@mui/material';
 import {
   createBrowserRouter, RouterProvider, Outlet, useParams,
-useOutletContext } from 'react-router-dom';
+useOutletContext, useLocation } from 'react-router-dom';
 
 import './styles/main.css';
 import Login from './components/login';
 import TopBar from './components/topBar';
 import UserDetail from './components/userDetail';
-import { usePokemonQuery } from './hooks/useQueries';
+import { usePokemonQuery, useRandomObjectQuery } from './hooks/useQueries';
 import { getRandomPokemonId } from './lib/randomPokemonID.js'
 import { apiUrl } from './lib/apiBaseUrl.js';
 
@@ -28,45 +28,74 @@ const queryClient = new QueryClient({
 
 function Home() {
 
-  const { loggedInUser } = useOutletContext();
+  const { loggedInUser, gameMode } = useOutletContext();
 
   const [pokemonId, setPokemonId] = useState(() => getRandomPokemonId());
   const [pokemonId2, setPokemonId2] = useState(() => getRandomPokemonId());
   const { data: pokemon, isPending, isError } = usePokemonQuery(pokemonId);
-  const { data: pokemon2, isPending: isPending2, isError: isError2 } = usePokemonQuery(pokemonId2);
+  const pokemonQuery2 = usePokemonQuery(pokemonId2);
 
   const [score, setScore] = useState(0);
+  const [objectFetchCount, setObjectFetchCount] = useState(0);
   const [message, setMessage] = useState(''); 
+  const objectQuery = useRandomObjectQuery(objectFetchCount);
+  const previousGameMode = useRef(gameMode);
 
-  const refreshPokemon = () => {
-    setPokemonId2(getRandomPokemonId());
-    setPokemonId(getRandomPokemonId());
-  };
+  const isPokemonMode = gameMode === 'pokemon';
+  const opponent = isPokemonMode
+    ? (pokemonQuery2.data ? { name: pokemonQuery2.data.name, image: pokemonQuery2.data.sprite, weight: pokemonQuery2.data.weight / 10 } : null)
+    : (objectQuery.data ? { name: objectQuery.data.name, image: objectQuery.data.image, weight: objectQuery.data.weight } : null);
+  const isPending2 = isPokemonMode ? pokemonQuery2.isPending : objectQuery.isPending;
+  const isError2 = isPokemonMode ? pokemonQuery2.isError : objectQuery.isError;
   
+  const refreshPokemon = () => {
+    setPokemonId(getRandomPokemonId());
+    if(isPokemonMode) {
+      setPokemonId2(getRandomPokemonId());
+    } else {
+      setObjectFetchCount((c) => c + 1);
+    }    
+  };
+
   const saveScore = async (finalScore) => {
     //only send to database if there is score to save
-    if (!loggedInUser) return;
+    if (!loggedInUser || finalScore === 0) return;
 
     try {
       await fetch(apiUrl(`/user/${loggedInUser._id}/score`), {
         method : 'POST',
         headers: { 'Content-Type': 'application/json' },
         credentials: 'include',
-        body: JSON.stringify({ score: finalScore })
+        body: JSON.stringify({ score: finalScore, gameMode })
       });
     } catch (err){
       console.error ('Failed to save data', err);
     }
   }
 
+  useEffect(() => {
+  // skip the very first render - there's no "previous mode" to save from yet
+    if (previousGameMode.current !== gameMode) {
+      if (score > 0) {
+        saveScore(score);
+      }
+      setScore(0);
+      setMessage(`You changed game modes, your final score is ${score}`);
+      previousGameMode.current = gameMode;
+      refreshPokemon();
+    }
+  }, [gameMode]);
+
   const handleGuess = (guessedPokemon) => {
-    if (!pokemon || !pokemon2) return; //in case one isn't working
+    if (!pokemon || !opponent) return; //in case one isn't working
+
+    const pokemonWeight = pokemon.weight / 10;
 
     let heavierSide;
-    if (pokemon.weight === pokemon2.weight){
+    if (pokemonWeight === opponent.weight){
       heavierSide = null; //ties, no points added
     } else {
-      heavierSide = pokemon.weight > pokemon2.weight ? 1 : 2;
+      heavierSide = pokemonWeight > opponent.weight ? 1 : 2;
     }
     
     if (heavierSide === null){
@@ -91,7 +120,9 @@ function Home() {
   return (
     <div>
     <Typography variant="body1">
-      Welcome to the my funny little game! Click on the pokemon button to get the weight comparison!
+      Welcome to the my funny little game! Click on the pokemon or object you think is heavier. 
+      Your score will be tracked until you get it wrong. Click on the leftside buttons to swap modes. 
+      Click on the big button at the top to come back to the game page.
       Login to save your high scores or come back to see your high scores. Happy gaming!
     </Typography>
 
@@ -140,7 +171,7 @@ function Home() {
         </Box>
       )}
       </Box>
-
+      {/* Second pokemon or random object here*/}
       <Box textAlign="center">
       {isPending2 && (
         <Box display="flex" justifyContent="left" py={4}>
@@ -148,15 +179,15 @@ function Home() {
         </Box>
       )}
 
-      {isError2 && <Typography color="error">Failed to load Pokemon.</Typography>}
+      {isError2 && <Typography color="error">Failed to load other item</Typography>}
 
-      {pokemon2 && (
+      {opponent && (
         <Box onClick={() => handleGuess(2)}
           sx ={{ cursor: 'pointer' }}
         >
-          <img src={pokemon2.sprite} alt={pokemon2.name} />
+          <img src={opponent.image} alt={opponent.name} style={{ maxWidth: 200}}/>
           <Typography variant="h6" sx={{ textTransform: 'capitalize' }}>
-            {pokemon2.name}
+            {opponent.name}
           </Typography>
           {/* <Typography>Weight: {pokemon2.weight / 10} kg</Typography>
 
@@ -185,6 +216,10 @@ function Root() {
   // sets up the users to log in
   // If logged in, can show the normal page
   const [loggedInUser, setLoggedInUser] = useState(null);
+  //swapping between the game's mode
+  const [gameMode, setGameMode] = useState('pokemon'); // 'pokemon' or 'object'
+  const location = useLocation(); //made to keep track of styling per page
+  const isHomePage = location.pathname === '/'; //variable that will act as a bool
 
   // check session on load, so a page refresh doesn't log the user out
   useEffect(() => {
@@ -211,14 +246,29 @@ function Root() {
         {/* Sidebar, will need to implement later. */}
         <Grid item sm={3}>
           <Paper className="main-grid-item">
-            
+            {isHomePage && ( 
+            <Box display="flex" flexDirection="column" gap={1} p={2}>
+            <Button
+                variant={gameMode === 'pokemon' ? 'contained' : 'outlined'}
+                onClick={() => setGameMode('pokemon')}
+              >
+                Pokemon vs. Pokemon
+              </Button>
+              <Button
+                variant={gameMode === 'object' ? 'contained' : 'outlined'}
+                onClick={() => setGameMode('object') }
+              >
+                Pokemon vs. Object
+              </Button>
+            </Box>
+            )}
           </Paper>
         </Grid>
 
         {/* Main Content */}
         <Grid item sm={9}>
           <Paper className="main-grid-item">
-            <Outlet context={{ loggedInUser, setLoggedInUser }} />
+            <Outlet context={{ loggedInUser, setLoggedInUser, gameMode, setGameMode }} />
           </Paper>
         </Grid>
 

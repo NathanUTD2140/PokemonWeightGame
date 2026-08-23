@@ -8,7 +8,11 @@ const userSchema = new mongoose.Schema({
     unique: true, //no repeating names
     trim: true //trim excess spacess
   },
-  high_score: { 
+  high_score_object: { 
+    type: [Number], 
+    default : [] 
+    }, 
+  high_score_pokemon: { 
     type: [Number], 
     default : [] 
     }, 
