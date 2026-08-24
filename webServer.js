@@ -6,8 +6,8 @@ import bcrypt from "bcrypt";
 //authenication
 import session from "express-session";
 import dotenv from "dotenv";
-import User from './schema/user.js';
-import Objects from './schema/objects.js';
+import User from './Schema/user.js';
+import Objects from './Schema/objects.js';
 
 dotenv.config();
 

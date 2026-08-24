@@ -157,9 +157,18 @@ function Home() {
 
       {pokemon && (
         <Box onClick={() => handleGuess(1)}
-          sx ={{ cursor: 'pointer' }}
-        >
-          <img src={pokemon.sprite} alt={pokemon.name} />
+          sx ={{ cursor: 'pointer' }}>
+          <Box sx ={{
+            width: 150,
+            height: 150,
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            }}
+          >
+          <img src={pokemon.sprite} alt={pokemon.name} 
+            style={{ maxWidth: '100%', maxHeight: '100%', objectFit: 'contain' }} />
+          </Box>
           <Typography variant="h6" sx={{ textTransform: 'capitalize' }}>
             {pokemon.name}
           </Typography>
@@ -183,9 +192,16 @@ function Home() {
 
       {opponent && (
         <Box onClick={() => handleGuess(2)}
-          sx ={{ cursor: 'pointer' }}
-        >
-          <img src={opponent.image} alt={opponent.name} style={{ maxWidth: 200}}/>
+          sx ={{ cursor: 'pointer' }}>
+            <Box sx={{
+              width: 150,
+              height: 150,
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center', }}>
+          <img src={opponent.image} alt={opponent.name} 
+          style={{ maxWidth: '100%', maxHeight: '100%', objectFit: 'contain' }}/>
+          </Box>
           <Typography variant="h6" sx={{ textTransform: 'capitalize' }}>
             {opponent.name}
           </Typography>
